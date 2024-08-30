@@ -12,9 +12,10 @@ public class UserService {
 
     private final UserRepository repository;
 
-    public void saveUser(Users user) {
+    public Users saveUser(Users user) {
         user.setStatus(Users.Status.ONLINE);
         repository.save(user);
+        return user;
     }
 
     @Transactional
