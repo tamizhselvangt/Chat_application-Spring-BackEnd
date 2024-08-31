@@ -1,6 +1,5 @@
 package com.tamizhselvan.pingme.chat;
 
-import com.tamizhselvan.pingme.user.UserController;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
