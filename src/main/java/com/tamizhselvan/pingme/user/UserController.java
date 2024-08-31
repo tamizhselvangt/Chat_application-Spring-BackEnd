@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class UserController{
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -23,11 +24,6 @@ public class UserController{
     @SendTo("/user/public")
     public Users addUser(@Payload Users user) {//,SimpMessageHeaderAccessor headerAccesser
 
-        System.out.println(user);
-//        logger.info("Received request to add user: {}", user);
-//        userService.saveUser(user);
-//        logger.info("User added successfully: {}", user);
-//        return user;
         try {
             Users savedUser = userService.saveUser(user);
             logger.info("User added successfully: {}", savedUser);
@@ -45,15 +41,15 @@ public class UserController{
     ) {
         logger.info("Received request to disconnect user: {}", user);
         userService.disconnect(user);
-        logger.info("User disconnected successfully: {}", user);
+//        logger.info("User disconnected successfully: {}", user);
         return user;
     }
 
-    @GetMapping("/users")
+    @GetMapping("/api/users")
     public ResponseEntity<List<Users>> findConnectedUsers() {
         logger.info("Received request to find connected users");
         List<Users> connectedUsers = userService.findConnectedUsers();
-        logger.info("Connected users: {}", connectedUsers);
+//        logger.info("Connected users: {}", connectedUsers);
         return ResponseEntity.ok(connectedUsers);
     }
 }
