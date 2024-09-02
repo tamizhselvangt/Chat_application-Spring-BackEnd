@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000/home")
 @RequiredArgsConstructor
 public class ChatController {
 
