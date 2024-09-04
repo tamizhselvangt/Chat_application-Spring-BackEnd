@@ -20,11 +20,14 @@ import jakarta.persistence.Enumerated;
 public class Users {
 
     @Id
-    @Column(name = "nick_name", nullable = false, unique = true)
-    private String nickName;
+    @Column(name = "user_name", nullable = false, unique = true)
+    private String userName;
 
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "profile_image")
+    private String profileImage;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

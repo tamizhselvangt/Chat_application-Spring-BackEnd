@@ -6,5 +6,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, UUID> {
-    Optional<ChatRoom> findBySender_NickNameAndRecipient_NickName(String senderId, String recipientId);
+    Optional<ChatRoom> findBySender_UserNameAndRecipient_UserName(String senderId, String recipientId);
 }

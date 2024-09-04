@@ -22,7 +22,7 @@ public class UserService {
 
     @Transactional
     public void disconnect(Users user) {
-        var storedUser = repository.findById(user.getNickName()).orElse(null);
+        var storedUser = repository.findById(user.getUserName()).orElse(null);
         if (storedUser != null) {
             storedUser.setStatus(Users.Status.OFFLINE);
             repository.save(storedUser);
@@ -45,8 +45,8 @@ public class UserService {
         if (existingUser.isEmpty()) {
             // Create a new user if one doesn't exist
             Users newUser = new Users();
-            newUser.setNickName(name);  // Use name as nickName
-            newUser.setFullName(email); // Use email as fullName
+            newUser.setUserName(name);  // Use name as nickName
+            newUser.setEmail(email); // Use email as fullName
             newUser.setStatus(Users.Status.ONLINE);
             repository.save(newUser);
         }

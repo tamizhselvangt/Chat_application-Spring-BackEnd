@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000/home")
+@CrossOrigin(origins = "http://localhost:3000/*")
 @RequiredArgsConstructor
 public class ChatController {
 
@@ -45,6 +45,7 @@ public class ChatController {
 
 
     @GetMapping("/messages/{senderId}/{recipientId}")
+    @CrossOrigin(origins = "http://localhost:3000/*")
     public ResponseEntity<List<ChatMessage>> findChatMessages(@PathVariable String senderId,
                                                               @PathVariable String recipientId) {
         return ResponseEntity

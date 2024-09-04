@@ -26,10 +26,10 @@ public class ChatRoom {
     private String chatId;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id", referencedColumnName = "nick_name")
+    @JoinColumn(name = "sender_id", referencedColumnName = "user_name")
     private Users sender;
 
     @ManyToOne
-    @JoinColumn(name = "recipient_id", referencedColumnName = "nick_name")
+    @JoinColumn(name = "recipient_id", referencedColumnName = "user_name")
     private Users recipient;
 }

@@ -19,7 +19,7 @@ public class ChatRoomService {
             boolean createNewRoomIfNotExists
     ) {
         return chatRoomRepository
-                .findBySender_NickNameAndRecipient_NickName(senderId, recipientId)
+                .findBySender_UserNameAndRecipient_UserName(senderId, recipientId)
                 .map(ChatRoom::getChatId)
                 .or(() -> {
                     if (createNewRoomIfNotExists) {
@@ -38,16 +38,16 @@ public class ChatRoomService {
                 .builder()
                 .id(UUID.randomUUID()) // Generate a new UUID
                 .chatId(chatId)
-                .sender(Users.builder().nickName(senderId).build()) // Assuming `Users` is correctly set
-                .recipient(Users.builder().nickName(recipientId).build()) // Assuming `Users` is correctly set
+                .sender(Users.builder().userName(senderId).build()) // Assuming `Users` is correctly set
+                .recipient(Users.builder().userName(recipientId).build()) // Assuming `Users` is correctly set
                 .build();
 
         ChatRoom recipientSender = ChatRoom
                 .builder()
                 .id(UUID.randomUUID()) // Generate a new UUID
                 .chatId(chatId)
-                .sender(Users.builder().nickName(recipientId).build()) // Assuming `Users` is correctly set
-                .recipient(Users.builder().nickName(senderId).build()) // Assuming `Users` is correctly set
+                .sender(Users.builder().userName(recipientId).build()) // Assuming `Users` is correctly set
+                .recipient(Users.builder().userName(senderId).build()) // Assuming `Users` is correctly set
                 .build();
 
         // Save both entities
