@@ -30,7 +30,7 @@ public class UserController{
 
         try {
             Users savedUser = userService.saveUser(user);
-            logger.info("User added successfully: {}", savedUser);
+//            logger.info("User added successfully: {}", savedUser);
             return savedUser;
         } catch (Exception e) {
             logger.error("Error adding user: {}", e.getMessage(), e);
@@ -44,7 +44,7 @@ public class UserController{
     public Users disconnectUser(
             @Payload Users user
     ) {
-        logger.info("Received request to disconnect user: {}", user);
+//        logger.info("Received request to disconnect user: {}", user);
         userService.disconnect(user);
 //        logger.info("User disconnected successfully: {}", user);
         return user;
@@ -52,7 +52,7 @@ public class UserController{
 
     @GetMapping("/api/users")
     public ResponseEntity<List<Users>> findConnectedUsers() {
-        logger.info("Received request to find connected users");
+//        logger.info("Received request to find connected users");
         List<Users> connectedUsers = userService.findConnectedUsers();
 //        logger.info("Connected users: {}", connectedUsers);
         return ResponseEntity.ok(connectedUsers);
@@ -80,7 +80,7 @@ public class UserController{
         Map<String, Object> userInfo = new HashMap<>(principal.getAttributes());
         userInfo.put("authenticated", true);
 
-        logger.info("OAuth2 user info: {}", userInfo);
+//        logger.info("OAuth2 user info: {}", userInfo);
         return ResponseEntity.ok(userInfo);
     }
 

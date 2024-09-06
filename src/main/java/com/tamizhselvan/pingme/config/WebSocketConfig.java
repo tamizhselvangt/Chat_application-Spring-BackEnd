@@ -34,9 +34,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         logger.info("Configuring message broker");
-        registry.enableSimpleBroker("/user");
-        registry.setApplicationDestinationPrefixes("/app");
-        registry.setUserDestinationPrefix("/user");
+        // Enabling both user-specific and broadcasting queues
+        registry.enableSimpleBroker("/user", "/queue", "/topic");
+        registry.setApplicationDestinationPrefixes("/app"); // Application-level
+        registry.setUserDestinationPrefix("/user");// User-specific
         logger.info("Message broker configured with user prefix: /user");
     }
 
@@ -44,7 +45,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         logger.info("Registering STOMP endpoints");
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:3000")
+                .setAllowedOrigins("http://localhost:3000") // Adjust as necessary
                 .withSockJS()
                 .setInterceptors(new HttpSessionHandshakeInterceptor() {
                     @Override
@@ -58,14 +59,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
         logger.info("Configuring message converters");
+        // Setting up JSON message converter
         DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
         resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
+
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-        converter.setObjectMapper(new ObjectMapper());
+        converter.setObjectMapper(objectMapper); // Use injected ObjectMapper
         converter.setContentTypeResolver(resolver);
-        converter.getObjectMapper().registerModule(new JavaTimeModule());
+        converter.getObjectMapper().registerModule(new JavaTimeModule()); // Support for Java 8 time types
+
         messageConverters.add(converter);
         logger.info("Message converters configured");
-        return false;
+        return false; // We are adding custom converters, so return false to prevent defaults
     }
 }

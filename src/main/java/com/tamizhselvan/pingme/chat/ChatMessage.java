@@ -3,8 +3,8 @@ package com.tamizhselvan.pingme.chat;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.UUID;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -33,5 +33,14 @@ public class ChatMessage {
     private String content;
 
     @Column(name = "time_stamp", nullable = false)
-    private LocalDateTime timestamp;
+    private Date timestamp;
+
+    // Store the file content directly in the database as byte[]
+    @Lob
+    @Column(name = "media_data")
+    private byte[] mediaData;
+
+    @Column(name = "media_type")
+    private String mediaType;
 }
+

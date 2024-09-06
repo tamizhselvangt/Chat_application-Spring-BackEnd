@@ -23,7 +23,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/api/userinfo", "/api/users", "/ws/**","/messages/{senderId}/{recipientId}").permitAll()  // Allow unauthenticated access
+                                .requestMatchers("/api/userinfo", "/api/users", "/ws/**","/messages/{senderId}/{recipientId}","/upload/media").permitAll()  // Allow unauthenticated access
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2->
