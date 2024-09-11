@@ -35,7 +35,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         logger.info("Configuring message broker");
         // Enabling both user-specific and broadcasting queues
-        registry.enableSimpleBroker("/user", "/queue", "/topic");
+        registry.enableSimpleBroker("/topic","/user");
         registry.setApplicationDestinationPrefixes("/app"); // Application-level
         registry.setUserDestinationPrefix("/user");// User-specific
         logger.info("Message broker configured with user prefix: /user");

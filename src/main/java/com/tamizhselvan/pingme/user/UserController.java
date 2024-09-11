@@ -25,7 +25,7 @@ public class UserController{
     private final UserService userService;
 
     @MessageMapping("/user.addUser")
-    @SendTo("/user/public")
+    @SendTo("/topic/public")
     public Users addUser(@Payload Users user) {//,SimpMessageHeaderAccessor headerAccesser
 
         try {
@@ -40,33 +40,22 @@ public class UserController{
 
 
     @MessageMapping("/user.disconnectUser")
-    @SendTo("/user/public")
+    @SendTo("/topic/public")
     public Users disconnectUser(
             @Payload Users user
     ) {
-//        logger.info("Received request to disconnect user: {}", user);
         userService.disconnect(user);
-//        logger.info("User disconnected successfully: {}", user);
         return user;
     }
 
     @GetMapping("/api/users")
     public ResponseEntity<List<Users>> findConnectedUsers() {
-//        logger.info("Received request to find connected users");
+
         List<Users> connectedUsers = userService.findConnectedUsers();
-//        logger.info("Connected users: {}", connectedUsers);
+
         return ResponseEntity.ok(connectedUsers);
     }
 
-//    @GetMapping("/api/userinfo")
-//    public String getUserInfo(@AuthenticationPrincipal OAuth2User principal) {
-//        logger.info("OAuth2 user info: {}", principal.getAttributes());
-//        // Process user info to save it in the database
-//        userService.processOAuthPostLogin(principal);
-//
-//        // Redirect to the React frontend
-//        return "redirect:http://localhost:3000/home";
-//    }
 
     @GetMapping("/api/userinfo")
     public ResponseEntity<Map<String, Object>> getUserInfoJson(@AuthenticationPrincipal OAuth2User principal) {
@@ -83,28 +72,9 @@ public class UserController{
 //        logger.info("OAuth2 user info: {}", userInfo);
         return ResponseEntity.ok(userInfo);
     }
-
-//    @GetMapping("/api/userinfo")
-//    public ResponseEntity<Map<String, Object>> getUserInfo(@AuthenticationPrincipal OAuth2User principal) {
-//        logger.info("OAuth2 user info: {}", principal.getAttributes());
-//        userService.processOAuthPostLogin(principal);
-//        return ResponseEntity.ok(principal.getAttributes());  // Return user info as JSON
-//    }
-
     @GetMapping("/redirect-to-home")
     public String redirectToHome() {
         return "redirect:http://localhost:3000/home";  // Separate redirect logic
     }
-
-
-//    @GetMapping("/api/userinfo")
-//    public ResponseEntity<Map<String, String>> getUserInfo(@AuthenticationPrincipal OAuth2User principal) {
-//        logger.info("OAuth2 user info: {}", principal.getAttributes());
-//        userService.processOAuthPostLogin(principal);
-//
-//        Map<String, String> response = Map.of("redirectUrl", "http://localhost:3000/home");
-//        return ResponseEntity.ok(response);
-//    }
-
 
 }

@@ -3,58 +3,56 @@ package com.tamizhselvan.pingme.chat;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+
+
 @Controller
 @CrossOrigin
 @RequiredArgsConstructor
 public class ChatController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
-    private final SimpMessagingTemplate messagingTemplate;
+
     private final ChatMessageService chatMessageService;
 
+    @Autowired
+    private final SimpMessagingTemplate messagingTemplate;
+
+
     @MessageMapping("/chat")
-    public void processMessage (@Payload ChatMessage chatMessage) {
-        try {
-            chatMessage.setTimestamp(new Date());
-            logger.info("Received a Chat Message: {}", chatMessage);
-
-            // Save regular chat messages
-            ChatMessage savedMsg = chatMessageService.save(chatMessage);
-
-            messagingTemplate.convertAndSendToUser(
-                    chatMessage.getRecipientId(),
-                    "/user/" + chatMessage.getRecipientId() + "/queue/messages",
-                    new ChatNotification(
-                            savedMsg.getChatId(),
-                            savedMsg.getSenderId(),
-                            savedMsg.getRecipientId(),
-                            savedMsg.getContent()
-                    )
-            );
-        } catch (Exception ex) {
-            logger.error("Error processing message: {}", ex.getMessage());
-        }
+    public void processMessage(@Payload ChatMessage chatMessage) {
+        ChatMessage savedMsg = chatMessageService.save(chatMessage);
+        messagingTemplate.convertAndSendToUser(
+                chatMessage.getRecipientId(),
+                "/queue/messages",
+                new ChatNotification(
+                        savedMsg.getChatId(),
+                        savedMsg.getSenderId(),
+                        savedMsg.getRecipientId(),
+                        savedMsg.getContent()
+                )
+        );
     }
 
     // New API endpoint for file uploads
     @PostMapping("/upload/media")
-    public ResponseEntity<String> uploadMedia (@RequestParam("file") MultipartFile file,
+    public ResponseEntity<ChatMessage> uploadMedia (@RequestParam("file") MultipartFile file,
                                                @RequestParam("senderId") String senderId,
                                                @RequestParam("recipientId") String recipientId) {
         try {
@@ -64,7 +62,7 @@ public class ChatController {
             mediaMessage.setSenderId(senderId);
             mediaMessage.setRecipientId(recipientId);
             mediaMessage.setTimestamp(new Date());
-            mediaMessage.setContent("Media file uploaded: " + file.getOriginalFilename());
+            mediaMessage.setContent(file.getOriginalFilename());
             mediaMessage.setMediaData(file.getBytes()); // Store file as byte array if needed
             mediaMessage.setMediaType(file.getContentType()); // Store media type
 
@@ -72,14 +70,37 @@ public class ChatController {
             // Save the chat message to the database
             chatMessageService.save(mediaMessage);
 
-            return ResponseEntity.ok("File uploaded successfully: " + file.getOriginalFilename());
+            return ResponseEntity.ok(mediaMessage);
         } catch (IOException e) {
             logger.error("Error saving file: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file.");
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file.");
+            return null;
         }
     }
 
-    // Utility method to save file and ensure directory exists
+
+
+    @GetMapping("/messages/media/{senderId}/{recipientId}")
+    public ResponseEntity<List<ChatMessage>> getUploadMedia(
+            @PathVariable String senderId,
+            @PathVariable String recipientId
+    ) {
+        return ResponseEntity.ok(chatMessageService.findMediaChatMessages(senderId, recipientId));
+    }
+
+
+    @GetMapping("/messages/{senderId}/{recipientId}")
+    public ResponseEntity<List<ChatMessage>> findChatMessages(@PathVariable String senderId,
+                                                              @PathVariable String recipientId) {
+        return ResponseEntity
+                .ok(chatMessageService.findChatMessages(senderId, recipientId));
+    }
+}
+
+
+
+
+// Utility method to save file and ensure directory exists
 //    private String saveFile(MultipartFile file) throws IOException {
 //        // Ensure the upload directory exists
 //        File uploadDir = new File(UPLOAD_DIR);
@@ -102,11 +123,3 @@ public class ChatController {
 //        // Return the absolute path to the saved file
 //        return targetFile.getAbsolutePath();
 //    }
-
-    @GetMapping("/messages/{senderId}/{recipientId}")
-    public ResponseEntity<List<ChatMessage>> findChatMessages(@PathVariable String senderId,
-                                                              @PathVariable String recipientId) {
-        return ResponseEntity
-                .ok(chatMessageService.findChatMessages(senderId, recipientId));
-    }
-}

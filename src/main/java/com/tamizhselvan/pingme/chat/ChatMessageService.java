@@ -31,6 +31,12 @@ public class ChatMessageService {
         return chatId.map(repository::findByChatId).orElse(new ArrayList<>());
     }
 
+    @Transactional
+    public List<ChatMessage> findMediaChatMessages(String senderId, String recipientId) {
+        var chatId = chatRoomService.getChatRoomId(senderId, recipientId, false);
+        return chatId.map(repository::findMediaMessagesByChatId).orElse(new ArrayList<>());
+    }
+
 
     public List<ChatMessage> findByChatId(String id) {
         return repository.findByChatId(id);
